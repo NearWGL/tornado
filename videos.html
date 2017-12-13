@@ -1,0 +1,45 @@
+@auto[]
+
+$videos[^mysql:items[
+	$.table[videos]
+	$.sort[carousel]
+	$.order[DESC]
+]]
+
+
+@header[]
+${config.img}/bg3.jpg
+
+
+@content[][c]
+<div class="container">
+	<div class="text-center">
+		<h2 class="plane-title">Видео</h2>
+	</div>
+
+	<div id="fs-videos">
+		^videos.menu{
+			<div class="fs-video-wrap" style="width: 100%">
+				<div class="fs-video">
+					<iframe src="https://www.youtube.com/embed/$videos.youtube_id" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
+				</div>
+				<h3 class="text-center">$videos.title</h3>
+				<h5 class="text-center">$videos.description</h5> 
+			</div>
+		}
+	</div>
+	<hr>
+	<div id="video-previews">
+		^videos.menu{
+			<div class="fs-preview">
+				<img src="https://img.youtube.com/vi/${videos.youtube_id}/mqdefault.jpg">
+			</div>
+		}
+	</div>
+
+</div>
+
+
+
+@title[]
+Видео

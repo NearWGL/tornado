@@ -1,0 +1,82 @@
+@auto[]
+
+$gallery[^mysql:items[
+	$.table[gallery]
+	$.where[ $.carousel(0) ]
+	$.sort[id]
+	$.order[desc]
+]]
+
+
+@header[]
+${config.img}/bg4.jpg
+
+
+@content[][c]
+<div class="text-center">
+	<h2 class="plane-title">Галерея</h2>
+</div>
+^if($carouselItems){
+	<div id="gallery-carousel" class="carousel slide" data-ride="carousel">
+	  <!-- Indicators -->
+	  <ol class="carousel-indicators">
+	  	$c(0)
+	  	^carouselItems.menu{
+		    <li data-target="#gallery-carousel" data-slide-to="$c" ^if($c eq 0){class="active"}></li>
+		    ^c.inc[]
+	    }
+	  </ol>
+
+	  <!-- Wrapper for slides -->
+	  <div class="carousel-inner" role="listbox">
+	  	$c(0)
+	  	^carouselItems.menu{
+		    <div class="item ^if($c eq 0){active}">
+		      <img src="${config.media}/$carouselItems.filename" alt="$carouselItems.name">
+		      <div class="carousel-caption">
+		        $carouselItems.name
+		      </div>
+		    </div>
+	    }
+	  </div>
+
+	  <!-- Controls -->
+	  <a class="left carousel-control" href="#gallery-carousel" role="button" data-slide="prev">
+	    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+	    <span class="sr-only">Назад</span>
+	  </a>
+	  <a class="right carousel-control" href="#gallery-carousel" role="button" data-slide="next">
+	    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+	    <span class="sr-only">Вперёд</span>
+	  </a>
+	</div>
+}
+^if($gallery){
+	<div class="container gallery">
+		<div class="row">
+			^col[0]
+			^col[1]
+			^col[2]
+			^col[3]
+		</div>
+	</div>
+}
+
+
+@col[m][c]
+$c(0)
+<div class="col-lg-3 col-md-4 col-sm-6 col">
+	^gallery.menu{
+		^if($c % 4 == $m){
+				<div class="img-wrap">
+					<img title="$gallery.name" src="${config.media}/gallery/$gallery.filename" >
+					^if(def $gallery.name){<span class="title">$gallery.name</span>}
+				</div>
+		}
+		^c.inc[]
+	}
+</div>
+
+
+@title[]
+Галерея

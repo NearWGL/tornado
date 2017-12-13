@@ -1,0 +1,26 @@
+@auto[][lang]
+
+^switch[$env:HTTP_HOST]{
+	^case[ru.$config.domain]{
+		$lang[ru]
+	}
+	^case[$config.domain;DEFAULT]{
+		$lang[ru]
+	}
+}
+
+^use[$config.core/languages/errors.${lang}.p]
+
+$code(^if(def $form:tables.nameless){^form:tables.nameless.field.int(404)}{404})
+
+^if(^errors.locate[code;$code]){}
+
+$response:status($errors.code)
+
+@main[]
+
+<!DOCTYPE html>
+<html>
+<head><title>$errors.code $errors.title</title></head>
+<body><h1>$errors.code $errors.title</h1><p>$errors.content</p></body>
+</html>

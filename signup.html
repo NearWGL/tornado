@@ -1,0 +1,107 @@
+@auto[]
+
+$module[
+	$.url[${config.url}/signup.html]
+	$.table[users]
+]
+^if(^auth:isAuthorized[]){
+	^base:location[${config.url}]
+}{
+	^switch[$form:do]{
+		^case[DEFAULT]{
+			$module.content[
+				^switch[$form:step]{
+					^case[DEFAULT]{^regForm[]}
+					^case[success]{^success[]}
+				}
+			]
+		}
+		^case[create]{^doCreate[]}
+		^case[confirm]{^doConfirm[]}
+	}
+}
+
+@header[]
+${config.img}/bg2.jpg
+
+@regForm[]
+<h3 class="box-title">Регистрация</h3>
+<div class="row">
+	<div class="col-sm-12">
+		<form id="registration-form" class="form-horizontal" action="${module.url}" method="POST">
+			<input type="hidden" name="do" value="create">
+		 	<div class="form-group">
+				<label for="email" class="col-sm-4 control-label">Имя</label>
+				<div class="col-sm-6">
+					<input type="text" class="form-control" name="name" placeholder="Анатолий" autofocus required minlength="5" maxlength="50">
+					<p class="help-block"><small>Будет видно другим пользователям.</small></p>
+				</div>
+			</div>
+		 	<div class="form-group">
+				<label for="email" class="col-sm-4 control-label">Email</label>
+				<div class="col-sm-6">
+					<input type="email" class="form-control" name="email" id="email" placeholder="Email" required>
+					<p class="help-block"><small>
+						Виден <b>только вам</b><br>
+						Используется для входа
+					</small></p>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="password1" class="col-sm-4 control-label">Пароль</label>
+				<div class="col-sm-6">
+					<input 
+						type="password" class="form-control" name="password1" id="password1"
+						placeholder="Минимум 6 символов" required
+						minlength="6" maxlength="20">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="password2" class="col-sm-4 control-label">Пароль ещё раз</label>
+				<div class="col-sm-6">
+					<input type="password" class="form-control" name="password2" required>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-4 col-sm-offset-4">
+					<button type="submit" class="btn btn-success" id="btnSubmit">Создать аккаунт</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+
+@success[]
+<h3 class="box-title">Аккаунт создан!</h3>
+<div class="row">
+	<div class="col-sm-12">
+		<h4 class="text-center">Вы можете войти в него <a href="${config.url}/signin.html">здесь</a></h4>
+		
+	</div>
+</div>
+
+
+@doCreate[][status]
+$status[^auth:signup[]]
+^if($status.success){
+	^base:location[${module.url}?step=success]	
+}{
+	^base:location[${module.url}]	
+}
+
+
+@content[]
+<div class="container">
+	<div class="row">
+		<div class="col-sm-6 col-sm-offset-3 col-xs-12">
+			<div class="box auth-box">
+				$module.content
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@title[]
+Регистрация нового пользователя

@@ -1,0 +1,167 @@
+@auto[][values]
+
+$module[
+	$.suburl[${config.behind}/videos.html]
+	$.tbl[`videos`]
+	$.id(^form:[id].int(0))
+	$.do[^form:[do].trim[]]
+]
+
+
+^if(def $module.do){
+	^switch[$module.do]{	
+		^case[create;update]{
+			^base:location[${module.suburl}?success=update]
+			$values[
+				$.youtube_id[^form:[youtube_id].trim[]]
+			]
+			^if(^checkValues[$values]){
+				^values.add[
+					$.title[^form:[title].trim[]]
+					$.description[^form:[description].trim[]]
+					$.carousel(^form:[carousel].int(0))
+				]
+
+				^if($values.carousel){ 
+					^mysql:update[
+						$.table[$module.tbl]
+						$.setvalues[ $.carousel(0) ]
+						$.where[$._raw_[id > 0]]
+					]
+				}
+
+				^mysql:update[
+					$.table[$module.tbl]
+					$.setvalues[ $values ]
+					^if($module.id){$.where[ $.id[$module.id] ]}
+				]
+			}
+		}
+		^case[delete]{
+			^if($module.id){
+				^mysql:delete[$.table[$module.tbl] $.where[$.id[$module.id]]]
+				^base:location[${module.suburl}?success=delete]
+			}{^base:location[]}
+		}
+		^case[DEFAULT]{^base:location[]}
+	}
+}{
+	^if($module.id){
+		$video[^mysql:item[
+			$.table[$module.tbl]
+			$.where[ $.id($module.id) ]
+		]]
+	}
+	$videos[^mysql:items[
+		$.table[$module.tbl]
+		$.sort[carousel]
+		$.order[DESC]
+	]]
+}
+
+@moduleContent[]
+^if(!$module.id){
+<div id="expand-block">
+	<a href="#" class="btn btn-primary" id="expand-new">Добавить видео</a>
+	<div class="clearfix"></div>
+	<br>
+</div>
+}
+<div class="panel panel-default" id="edit-pane" ^if(! $module.id){style="display:none"}>
+	<div class="panel-heading">
+		^if($module.id){Редактирование видео}{Новое видео }
+	</div>
+	<div class="panel-body">
+		<form action="${module.suburl}" method="POST">
+			<input type="hidden" name="do" value="update">
+			^if($module.id){<input type="hidden" name="id" value="$module.id">}
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label>Название</label>
+						<input type="text" class="form-control" name="title" value="$video.title" placeholder="">
+					</div>
+					<div class="form-group">
+						<label>Описание</label>
+						<textarea class="form-control" name="description" placeholder="">$video.description</textarea>
+					</div>
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" name="carousel" value="1" ^if($video.carousel){checked="checked"}> Главное
+						</label>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label>Youtube ID</label>
+						<input type="text" class="form-control" name="youtube_id" value="$video.youtube_id" placeholder="8iNczzhZmbc" required="">
+						<p class="help-block">
+							Если ссылка на видео выглядит так: https://www.youtube.com/watch?v=8iNczzhZmbc
+							<br>То ID = 8iNczzhZmbc
+						</p>
+					</div>
+				</div>
+			</div>
+			<hr>
+				<button type="submit" class="btn btn-success">Сохранить</button>
+				<a href="$module.suburl" class="btn btn-default btn-sm" style="margin-left: 20px">Сбросить</a>
+		</form>
+	</div>
+</div>
+
+<div class="panel panel-default">
+	<div class="panel-heading">Видеозаписи</div>
+	<div class="panel-body">
+		^if($videos){
+			<br>
+			<table class="table">
+				<thead>
+					<th>Превью</th>
+					<th>Название</th>
+					<th>YID</th>
+					<th class="text-center">Действия</th>
+				</thead>
+				<tbody>
+					^videos.menu{
+						<tr>
+							<td><img src="https://img.youtube.com/vi/${videos.youtube_id}/default.jpg"></td>
+							<td>
+								<p>^if($videos.carousel){<span style="color:red">$videos.title</span>}{$videos.title}</p>
+								<p><small>$videos.description</small></p>
+							</td>
+							<td>
+								<p>$videos.youtube_id</p>
+								<p><a href="https://www.youtube.com/watch?v=${videos.id}" title="Ссылка на видео" target="_blank">Youtube</a></p>
+							</td>
+							<td class="text-center">
+								<ul class="nav">
+									<li><a href="${module.suburl}?id=${videos.id}" title="Изменить">Изменить</a></li>
+									<li><a href="${module.suburl}?do=delete&id=${videos.id}" title="Удалить" onclick="confirm('Вы действительно хотите удалить видео?')"> Удалить</a></li>
+								</ul>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}{
+			<p class="text-center">Не удалось найти видеозаписи</p>
+		}
+	</div>
+</div>
+
+
+@endscripts[]
+
+<script>
+	^$(document).ready(function() {
+		^$('#expand-new').click(function(e) {
+			e.preventDefault()^;
+			^$('#edit-pane').show()^;
+			^$('#expand-block').hide()^;
+		})^;
+	})^;
+</script>
+
+
+@title[]
+Видеозаписи

@@ -1,0 +1,187 @@
+@auto[]
+$news[^mysql:items[
+	$.table[news]
+	$.sort[created]
+	$.order[desc]
+	$.limit[6]
+]]
+
+
+@header[]
+${config.img}/bg1.jpg
+
+
+@content[]
+
+<div class="container">
+	<div class="row home-border-wrap">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-lg-push-3 home-border-middle">
+
+			<h4 class="hugetitle">Последние новости</h4>
+			^news[]
+        </div>
+
+
+        <div class="col-12 col-sm-12 col-md-12 col-lg-3 col-lg-pull-6 bordered">
+            
+			<div class="hugetitle">О команде</div>
+			<div class="text-center">
+				<img class="img-round full-width" src="/assets/images/tornado.png" style="max-height: 140px">
+			</div>
+			<br>
+			<div class="row">
+				<div class="col-lg-8 col-lg-offset-2 text-center">
+					<h4 class="no-margin">NesKwi</h4>
+					<h6 class="no-margin"><b>лидер</b></h6>
+					<br>
+					<h4 class="no-margin">2015 год</h4>
+					<h6 class="no-margin"><b>дата основания</b></h6>
+					<br>
+					<h4 class="no-margin">94%</h4>
+					<h6 class="no-margin"><b>win-rate</b></h6>
+				</div>
+			</div>
+			<hr>
+			<div class="hugetitle">Состав</div>
+			^team[]
+
+		</div>
+			            
+        <div class="col-12 col-sm-12 col-md-12 col-lg-3 box pb-3">
+			<div class="hugetitle">Ближайшие события</div>
+			<blockquote>
+				<h4>Полуфинал чемпионата WarGamingLeague</h4>
+				<h6><i class="fa fa-map-marker"></i> Москва &nbsp^; <i class="fa fa-clock-o"></i> 12 декабря</h6>
+			</blockquote>
+			<blockquote>
+				<h4>Финал золотой серии WarGamingLeague</h4>
+				<h6><i class="fa fa-map-marker"></i> Москва &nbsp^; <i class="fa fa-clock-o"></i> 24 декабря</h6>
+			</blockquote>
+			<hr>
+			<div class="hugetitle">WARGAMING.NET LEAGUE</div>
+			^leagTable[]
+        </div>
+    </div>
+</div>
+
+
+@news[][dt]
+^news.menu{
+	$dt[^date::create[$news.created]]
+	<div class="homenews">
+		<div class="row">
+			<div class="col-lg-4 ">
+				<a href="${config.url}/news.html?id=$news.id"><img src="${config.media}/news/${news.image}"></a>
+			</div>
+			<div class="col-lg-8 leftborder">
+				<a href="${config.url}/news.html?id=$news.id"><div class="goodtitle title">$news.title</div></a>
+				<div class="description">
+					<p>$news.sh_descr</p>
+					<span class="date">^formatDate[$dt]</span>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+
+
+
+@team[]
+<div id="team" class="team">
+	^teammate[neskwi;Владислав Канаев;Командир;Россия]
+	^teammate[near;Алексей Кучки;Игрок;Беларусь]
+	^teammate[grifon;Евгений Войтенко;Игрок;Украина]
+	^teammate[server;Эдуард Сечка;Игрок;Беларусь]
+	^teammate[apple;Юрий Ильин;Игрок;Россия]
+	^teammate[dyador;Владимир Друтский;Игрок;Украина]
+	^teammate[nuclear;Алексей Морозов;Игрок;Россия]
+	<a href="#" id="expand-team" class="hidden-xs">Больше подробностей</a>
+</div>
+
+@teammate[image;name;status;country]
+<div class="row teammate">
+	<div class="col-lg-4 img-wrap">
+		<img class="img-circle adjust-width" src="/assets/images/team/${image}.png">
+	</div>
+	<div class="col-lg-8 info">
+		<h4 style="margin: 0">$name</h4>
+		<small>$status</small>
+		<div class="clearfix"></div>
+		<small class="country">$country</small>
+	</div>
+</div>
+
+
+
+
+
+@leagTable[]
+<div class="table-responsive"><table class="table table-bordered">
+	<tbody><tr>
+		<th class="text-center border-top-0"><small><strong><small><i class="fa fa-trophy"></i></small></strong></small></th>
+		<th class="text-center border-top-0 text-uppercase"><small><strong><small>Команда</small></strong></small></th>
+		<th class="text-center border-top-0 text-uppercase"><small><strong><small>Очки</small></strong></small></th>
+	</tr>
+
+	<tr style="background: #ededed">
+		<td class="text-center"><small>1</small></td>
+		<td class="text-center"><small>TORNADO ENERGY</small></td>
+		<td class="text-center"><small>33</small></td>
+	</tr>
+	
+	<tr>
+		<td class="text-center"><small>2</small></td>
+		<td class="text-center"><small>Rush</small></td>
+		<td class="text-center"><small>30</small></td>
+	</tr>
+	
+	<tr>
+		<td class="text-center"><small>3</small></td>
+		<td class="text-center"><small>UNIQUE</small></td>
+		<td class="text-center"><small>30</small></td>
+	</tr>
+	
+	<tr>
+		<td class="text-center"><small>4</small></td>
+		<td class="text-center"><small>Not So Serious</small></td>
+		<td class="text-center"><small>29</small></td>
+	</tr>
+	
+	<tr>
+		<td class="text-center"><small>5</small></td>
+		<td class="text-center"><small>ROSTSELMASH</small></td>
+		<td class="text-center"><small>22</small></td>
+	</tr>
+	
+	<tr>
+		<td class="text-center"><small>6</small></td>
+		<td class="text-center"><small>IMPACT Gaming</small></td>
+		<td class="text-center"><small>18</small></td>
+	</tr>
+	
+	<tr>
+		<td class="text-center"><small>7</small></td>
+		<td class="text-center"><small>Cascade eSports</small></td>
+		<td class="text-center"><small>6</small></td>
+	</tr>
+	
+	<tr>
+		<td class="text-center"><small>8</small></td>
+		<td class="text-center"><small>Brain Storm</small></td>
+		<td class="text-center"><small>0</small></td>
+	</tr>
+	
+</tbody></table></div>
+
+
+
+
+
+
+
+
+
+
+
+

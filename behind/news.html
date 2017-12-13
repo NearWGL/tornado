@@ -1,0 +1,178 @@
+@auto[][values;tmp]
+
+$module[
+	$.suburl[${config.behind}/news.html]
+	$.tbl[`news`]
+	$.id(^form:[id].int(0))
+	$.do[^form:[do].trim[]]
+]
+
+
+^if(def $module.do){
+	^switch[$module.do]{	
+		^case[create;update]{
+			^base:location[${module.suburl}?success=update]
+			$values[
+				$.image[$form:image]
+				$.title[^form:[title].trim[]]
+			]
+			^if($module.id || ^checkValues[$values]){
+				^if(def $values.image){
+					$tmp[^file:justname[$values.image.name]]
+					$tmp[^tmp.left(20)-^math:uuid[].^file:justext[$values.image.name]]
+	   				^values.image.save[binary;${config.media}/news/$tmp]
+
+   					$values.image[$tmp]
+   				}{
+   					^values.delete[image]
+   				}
+
+
+				^values.add[
+					$.sh_descr[^form:[sh_descr].trim[]]
+					$.content[^form:[content].trim[]]
+					$.created[^form:[created].trim[]]
+				]
+				^if(! def $values.created){$values.created[^config.now.sql-string[]]}
+
+				^mysql:update[
+					$.table[$module.tbl]
+					$.setvalues[ $values ]
+					^if($module.id){$.where[ $.id[$module.id] ]}
+				]
+			}
+		}
+		^case[delete]{
+			^if($module.id){
+				^mysql:delete[$.table[$module.tbl] $.where[$.id[$module.id]]]
+				^base:location[${module.suburl}?success=delete]
+			}{^base:location[]}
+		}
+		^case[DEFAULT]{^base:location[]}
+	}
+}{
+	^if($module.id){
+		$item[^mysql:item[
+			$.table[$module.tbl]
+			$.where[ $.id($module.id) ]
+		]]
+	}
+	$news[^mysql:items[
+		$.table[$module.tbl]
+		$.sort[id]
+		$.order[DESC]
+	]]
+}
+
+@moduleContent[]
+^if(!$module.id){
+<div id="expand-block">
+	<a href="#" class="btn btn-primary" id="expand-new">Добавить новость</a>
+	<div class="clearfix"></div>
+	<br>
+</div>
+}
+<div class="panel panel-default" id="edit-pane" ^if(! $module.id){style="display:none"}>
+	<div class="panel-heading">
+		^if($module.id){Редактирование новости}{Создать новость }
+	</div>
+	<div class="panel-body">
+		^if($module.id){
+			<div class="text-center">
+				<img style="max-width: 100%^; max-height: 50vh" src="${config.media}/news/$item.image">
+			</div>
+			<hr>
+		}
+		<form action="${module.suburl}" method="POST"  enctype="multipart/form-data">
+			<input type="hidden" name="do" value="update">
+
+			^if($module.id){<input type="hidden" name="id" value="$module.id">}
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label>Заголовок</label>
+						<input type="text" class="form-control" name="title" value="$item.title" placeholder="" required="">
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label>Изображение</label>
+						<input type="file"  name="image" ^if(!$module.id){required=""}>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label>Короткое описание</label>
+						<textarea class="form-control" name="sh_descr" required="">$item.sh_descr</textarea>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label>Дата публикации</label>
+						<input type="text" class="form-control" name="created" value="^if(def $item.created){$item.created}{^config.now.sql-string[]}" placeholder="" >
+					</div>
+				</div>
+			</div>
+			<hr>
+			<div class="form-group">
+				<label>Текст новости</label>
+				<textarea class="form-control" name="content" id="content" required="">$item.content</textarea>
+			</div>
+			<hr>
+				<button type="submit" class="btn btn-success">Сохранить</button>
+				<a href="$module.suburl" class="btn btn-default btn-sm" style="margin-left: 20px">Сбросить</a>
+		</form>
+	</div>
+</div>
+
+<div class="panel panel-default">
+	<div class="panel-heading">Новости</div>
+	<div class="panel-body">
+		^if($news){
+			<br>
+			<table class="table">
+				<thead>
+					<th>Превью</th>
+					<th>Заголовок</th>
+					<th class="text-center">Действия</th>
+				</thead>
+				<tbody>
+					^news.menu{
+						<tr>
+							<td><img src="${config.media}/news/$news.image" style="max-height: 130px^; max-width: 130px"></td>
+							<td>$news.title<br><small>$news.sh_descr</small></td>
+							<td class="text-center">
+								<ul class="nav">
+									<li><a href="${module.suburl}?id=${news.id}" title="Изменить">Изменить</a></li>
+									<li><a href="${module.suburl}?do=delete&id=${news.id}" title="Удалить" onclick="return confirm('Вы действительно хотите удалить новость?')"> Удалить</a></li>
+								</ul>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}{
+			<p class="text-center">Не удалось найти видеозаписи</p>
+		}
+	</div>
+</div>
+
+
+@endscripts[]
+<script src="${config.js}/static/ckeditor/ckeditor.js"></script>
+<script>
+	^$(document).ready(function() {
+		^$('#expand-new').click(function(e) {
+			e.preventDefault()^;
+			^$('#edit-pane').show()^;
+			^$('#expand-block').hide()^;
+		})^;
+	})^;
+	CKEDITOR.replace('content');
+</script>
+
+
+@title[]
+Новости

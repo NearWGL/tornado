@@ -1,0 +1,82 @@
+@auto[]
+
+$module[
+	$.id(^form:id.int(0))
+]
+
+^if($module.id){
+	$news[^mysql:item[
+		$.table[news]
+		$.where[ $.id[$module.id] ]
+	]]
+}{
+	$news[^mysql:items[
+		$.table[news]
+		$.sort[created]
+		$.order[desc]
+	]]	
+}
+
+
+@header[]
+${config.img}/bg2.jpg
+
+
+@content[][c;d]
+^if($module.id){
+	^if($news){
+		$dt[^date::create[$news.created]]
+		<div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+			<div class="text-center">
+				<div><a href="${config.url}/news.html">вернуться к новостям</a></div>
+				<h2 class="plane-title" style="margin-bottom: 10px">$news.title</h2>
+				<h5>$news.sh_descr</h5>
+			</div>
+			<hr>
+			<div class="news-wrap">
+				^untaint{$news.content}
+			</div>
+			<hr>
+			<div class="text-center">^formatDate[$dt]</div>
+		</div></div></div>
+	}{
+		^base:location[]
+	}
+}{
+	<div class="text-center">
+		<h2 class="plane-title">Новости</h2>
+	</div>
+	^if($news){
+		<div class="container">
+			<div class="row">
+				^news.menu{
+					$dt[^date::create[$news.created]]
+					<div class="col-lg-4 col-md-6 col-sm-12">
+						<div class="news-box">
+							<a href="${config.url}/news.html?id=$news.id">
+								<div class="panel panel-default">
+									<div class="panel-body">
+										<div class="img-wrap">
+											<img src="${config.media}/news/$news.image">
+										</div>
+										<div class="descr">
+											$news.sh_descr
+											<div class="time">^formatDate[$dt]</div>
+										</div>
+									</div>
+									<div class="title"><span>$news.title</span></div>
+								</div>
+							</a>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+	}{
+		<h3 class="text-center">Пока что нет новостей</h3>
+	}
+}
+
+
+@title[]
+Новости

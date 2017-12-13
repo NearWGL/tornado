@@ -1,0 +1,85 @@
+@auto[][values]
+
+$module[
+	$.suburl[${config.behind}/settings.html]
+	$.tbl[`users`]
+	$.do[^form:[do].trim[]]
+	$.error[^form:[error].trim[]]
+	$.name[^form:[name].trim[]]
+	$.pass1[^form:[pass1].trim[]]
+	$.pass2[^form:[pass2].trim[]]
+]
+
+
+^if(def $module.do){
+	^switch[$module.do]{	
+		^case[create;update]{
+			^base:location[${module.suburl}?success=update]
+
+			^if(def $module.name){
+				^mysql:update[
+					$.table[$module.tbl]
+					$.setvalues[ $.name[$module.name] ]
+					$.where[ $.id[$auth:user.id] ]
+				]			
+			}
+			^if(def $module.pass1){
+				^if(^module.pass1.length[] < 6){
+					^base:location[${module.suburl}?error=paslen]
+				}($module.pass1 ne $module.pass2){
+					^base:location[${module.suburl}?error=pascomp]
+				}{
+					^mysql:update[
+						$.table[$module.tbl]
+						$.setvalues[ $.password[^auth:makePassword[$module.pass1]] ]
+						$.where[ $.id[$auth:user.id] ]
+					]	
+				}	
+			}
+		}
+		^case[DEFAULT]{^base:location[]}
+	}
+}
+
+
+@moduleContent[]
+<div class="panel panel-default">
+	<div class="panel-heading">Настройки пользователя</div>
+	<div class="panel-body">
+		<form action="${module.suburl}" method="POST">
+			<input type="hidden" name="do" value="update">
+			<div class="form-group">
+				<label>Ваш Email</label>
+				<p class="form-control-static"><code>$auth:user.email</code></p>
+				<p class="help-block">Вы не можете его изменить</p>
+			</div>
+			<hr>
+			<div class="form-group">
+				<label>Ваше имя</label>
+				<input type="text" class="form-control" name="name" value="$auth:user.name" placeholder="Имя">
+			</div>
+			<hr>
+			^if($module.error eq "pascomp"){
+				<div class="alert alert-danger">Пароли не совпадают</div>
+			}($module.error eq "paslen"){
+				<div class="alert alert-danger">Пароль должен быть не короче 6 символов</div>
+			}
+			<div class="form-group">
+				<label>Новый пароль</label>
+				<input type="password" class="form-control" name="pass1" value="" placeholder="******">
+			</div>
+			<div class="form-group">
+				<label>Новый пароль ещё раз</label>
+				<input type="password" class="form-control" name="pass2" value="" placeholder="******">
+				<p class="help-block">Оставьте поля пустыми, если вы не хотите менять пароль</p>
+			</div>
+			<hr>
+				<button type="submit" class="btn btn-success">Сохранить</button>
+		</form>
+	</div>
+</div>
+
+
+
+@title[]
+Настройки пользователя

@@ -1,0 +1,28 @@
+@auto[][values]
+
+
+
+@moduleContent[]
+<div class="panel panel-default">
+	<div class="panel-heading">Добро пожаловать в панель управления</div>
+	<div class="panel-body">
+		^if($auth:user.admin){
+			<h4 class="heading">Модули</h4>
+			<ul>
+				<li><a href="$config.behind/news.html">Новости</a> - управление новостями сайта</li>
+				<li><a href="$config.behind/videos.html">Видео</a> - управление видеозаписями сайта</li>
+				<li><a href="$config.behind/gallery.html">Галерея</a> - управление галереей сайта</li>
+			</ul>
+		}{
+			<br>
+			<div class="alert alert-warning">
+				<strong>У вас нет прав на изменение контента</strong><br>
+				Попросите администратора изменить статус вашего аккаунта
+			</div>
+		}
+	</div>
+</div>
+
+
+@title[]
+Behind the scene
